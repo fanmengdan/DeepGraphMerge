@@ -1,0 +1,24 @@
+package com.github.ConstructDependencyGraph.model.entity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ClassInfo extends DeclarationInfo {
+
+  public String name;
+  //  public String belongTo;
+  public String fullName;
+  public String visibility = "package";
+  public boolean isAbstract = false;
+  public boolean isFinal = false;
+  public boolean isAnonymous = false;
+  public String superClassType;
+  public List<String> superInterfaceTypeList = new ArrayList<>();
+  public String comment = "";
+  public String content = "";
+
+  public String uniqueName() {
+    //    return belongTo + "." + name;
+    return fullName;
+  }
+}

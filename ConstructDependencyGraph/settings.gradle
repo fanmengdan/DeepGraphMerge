@@ -1,0 +1,10 @@
+// ✅ 正确写法：pluginManagement 必须放在最前面
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        maven { url 'https://maven.aliyun.com/repository/public' }  // 可加阿里云镜像加速
+    }
+}
+
+rootProject.name = 'MyProject'  // 其他代码放在 pluginManagement 之后

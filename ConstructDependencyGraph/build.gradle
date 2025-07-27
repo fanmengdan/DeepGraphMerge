@@ -1,0 +1,94 @@
+plugins {
+    id 'java'
+    id 'idea'
+}
+
+group 'SmartCommitCore'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    // 推荐保留 mavenCentral
+    mavenCentral()
+
+    // Gradle 插件仓库 (已使用 HTTPS)
+    maven { url 'https://plugins.gradle.org/m2/' }
+
+    // 阿里云镜像仓库 (全部改为 HTTPS)
+    maven { url 'https://maven.aliyun.com/repository/google' }
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    maven { url 'https://maven.aliyun.com/repository/jcenter' }
+
+    // 如果需要其他仓库
+    // maven { url 'https://jitpack.io' }
+}
+
+//gradle.buildFinished { buildResult ->
+//    println "BUILD FINISHED"
+//    println "build failure - " + buildResult.failure
+//}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+    options.fork = true
+    options.forkOptions.jvmArgs += ["-Duser.language=en"]
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.github.smartcommit.client.CLI'
+        )
+    }
+}
+
+task fatJar(type: Jar) {
+    manifest.from jar.manifest
+    archiveClassifier = 'all'
+    from {
+        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.compileClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    with jar
+}
+
+artifacts {
+    archives fatJar
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+configurations.all {
+}
+
+dependencies {
+    implementation fileTree(dir: 'lib', include: ['*.jar'])
+    implementation 'com.beust:jcommander:1.78'
+    implementation 'org.eclipse.jdt:org.eclipse.jdt.core:3.23.0'
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:6.5.0.202303070854-r'
+    implementation 'org.jgrapht:jgrapht-core:1.3.0'
+    implementation 'org.jgrapht:jgrapht-io:1.3.0'
+    implementation 'info.debatty:java-string-similarity:2.0.0'
+
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:5.10.0.202012080955-r'
+    implementation 'org.mongodb:mongo-java-driver:3.12.8'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.ibm.icu:icu4j:68.2'
+
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.0'
+    implementation 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
+    implementation 'com.github.haifengl:smile-kotlin:2.6.0'
+
+    testImplementation 'org.assertj:assertj-core:3.18.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+}
